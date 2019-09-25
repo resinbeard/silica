@@ -1,10 +1,12 @@
-# #! /bin/bash
+#! /bin/bash
+
+ mkdir /var/log/silica
  
  oscsend localhost 9456 /silica/display/startup_system_process si "linux 4.14.83-gentoo" 0
 
  cmd=(jackd -d alsa -d hw:D16A)
  cmd_status=1;
- nohup "${cmd[@]}" 2> /dev/null &
+ nohup "${cmd[@]}" > /var/log/silica/jackd.out 2> /var/log/silica/jackd.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
@@ -15,18 +17,21 @@
 
  cmd=(serialoscd)
  cmd_status=1;
- nohup "${cmd[@]}" 2> /dev/null &
+ nohup "${cmd[@]}" > /var/log/silica/serialoscd.out 2> /var/log/silica/serialoscd.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
  cmd_str="${cmd[@]}"
  oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
 
- sleep 0.5
+ sleep 2.0
 
- cmd=(/home/silica/Dev/candor/candor -pa samples -pr test -cc)
+ monome0=`/home/silica/Dev/silica/scripts/monome_512.sh | head -1`
+ monome1=`/home/silica/Dev/silica/scripts/monome_512.sh | tail -1`
+ 
+ cmd=(/home/silica/Dev/candor/candor -m $monome0 -pa samples -pr test -cc)
  cmd_status=1;
- nohup "${cmd[@]}" 2> /dev/null &
+ nohup "${cmd[@]}"  > /var/log/silica/candor.out 2> /var/log/silica/candor.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
@@ -37,7 +42,18 @@
 
  cmd=(/home/silica/Dev/cyperus/cyperus -i 4 -o 4)
  cmd_status=1;
- nohup "${cmd[@]}" 2> /dev/null &
+ nohup "${cmd[@]}" > /var/log/silica/cyperus.out 2> /var/log/silica/cyperus.err &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+ sleep 2.0
+
+ cmd=(/home/silica/Dev/peatlands/peatlands -m $monome1 -cy "echo 'hello' &")
+ cmd_status=1;
+ nohup "${cmd[@]}" > /var/log/silica/peatlands.out 2> /var/log/silica/peatlands.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
@@ -48,7 +64,7 @@
 
  cmd=(bash /home/silica/Dev/jack_audio_connections.sh)
  cmd_status=1;
- nohup "${cmd[@]}" 2> /dev/null &
+ nohup "${cmd[@]}" > /var/log/silica/jack_audio_connections.out 2> /var/log/silica/jack_audio_connections.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
@@ -59,7 +75,7 @@ sleep 2.0
 
  cmd=(sudo /etc/init.d/silica_stat start)
  cmd_status=1;
- nohup "${cmd[@]}" 2> /dev/null &
+ nohup "${cmd[@]}" > /var/log/silica/silica_stat.out 2> /var/log/silica/silica_stat.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
