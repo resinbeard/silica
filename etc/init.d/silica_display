@@ -1,0 +1,6 @@
+#!/sbin/openrc-run
+command="/home/silica/Dev/silica_display/bin/silica_display"
+name="silica_display daemon"
+command_background=true
+pidfile="/var/run/silica_display.pid"
+description="silica_display starts the silica boot script"

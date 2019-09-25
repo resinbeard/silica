@@ -1,0 +1,10 @@
+#!/sbin/openrc-run
+command="sh /home/silica/Dev/silica/scripts/stat.sh"
+name="silica stat daemon"
+command_background=true
+pidfile="/var/run/silica_stat.pid"
+description="silica_stat starts the silica stat script"
+
+depend() {
+	 need silica_display
+}

@@ -1,0 +1,67 @@
+# #! /bin/bash
+ 
+ oscsend localhost 9456 /silica/display/startup_system_process si "linux 4.14.83-gentoo" 0
+
+ cmd=(jackd -d alsa -d hw:D16A)
+ cmd_status=1;
+ nohup "${cmd[@]}" 2> /dev/null &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+ sleep 0.5
+
+ cmd=(serialoscd)
+ cmd_status=1;
+ nohup "${cmd[@]}" 2> /dev/null &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+ sleep 0.5
+
+ cmd=(/home/silica/Dev/candor/candor -pa samples -pr test -cc)
+ cmd_status=1;
+ nohup "${cmd[@]}" 2> /dev/null &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+ sleep 1.0
+
+ cmd=(/home/silica/Dev/cyperus/cyperus -i 4 -o 4)
+ cmd_status=1;
+ nohup "${cmd[@]}" 2> /dev/null &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+ sleep 2.0
+
+ cmd=(bash /home/silica/Dev/jack_audio_connections.sh)
+ cmd_status=1;
+ nohup "${cmd[@]}" 2> /dev/null &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+sleep 2.0
+
+ cmd=(sudo /etc/init.d/silica_stat start)
+ cmd_status=1;
+ nohup "${cmd[@]}" 2> /dev/null &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
