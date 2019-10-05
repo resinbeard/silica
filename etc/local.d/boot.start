@@ -28,8 +28,10 @@
 
  monome0=`/home/silica/Dev/silica/scripts/monome_512.sh | head -1`
  monome1=`/home/silica/Dev/silica/scripts/monome_512.sh | tail -1`
+
+ mkdir -p /root/silica
  
- cmd=(/home/silica/Dev/candor/candor -m $monome0 -pa samples -pr test -cc)
+ cmd=(/home/silica/Dev/candor/candor -m $monome0 -pa /root/silica/ -pr test -cc)
  cmd_status=1;
  nohup "${cmd[@]}"  > /var/log/silica/candor.out 2> /var/log/silica/candor.err &
  if [ $? -eq 0 ]; then
@@ -65,6 +67,17 @@
  cmd=(bash /home/silica/Dev/jack_audio_connections.sh)
  cmd_status=1;
  nohup "${cmd[@]}" > /var/log/silica/jack_audio_connections.out 2> /var/log/silica/jack_audio_connections.err &
+ if [ $? -eq 0 ]; then
+    cmd_status=0;
+ fi
+ cmd_str="${cmd[@]}"
+ oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
+
+ sleep 2.0
+
+ cmd=(node /home/silica/Dev/litegraph.js/utils/server.js)
+ cmd_status=1;
+ nohup "${cmd[@]}" > /var/log/silica/litegraph.out 2> /var/log/silica/litegraph.err &
  if [ $? -eq 0 ]; then
     cmd_status=0;
  fi
