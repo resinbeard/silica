@@ -4,7 +4,7 @@
  
  oscsend localhost 9456 /silica/display/startup_system_process si "linux 4.14.83-gentoo" 0
 
- cmd=(jackd -d alsa -d hw:D16A)
+ cmd=(jackd -d alsa -d hw:D16A -p128)
  cmd_status=1;
  nohup "${cmd[@]}" > /var/log/silica/jackd.out 2> /var/log/silica/jackd.err &
  if [ $? -eq 0 ]; then
@@ -42,18 +42,7 @@
 
  sleep 1.0
 
- cmd=(/home/silica/Dev/cyperus/cyperus -i 4 -o 4)
- cmd_status=1;
- nohup "${cmd[@]}" > /var/log/silica/cyperus.out 2> /var/log/silica/cyperus.err &
- if [ $? -eq 0 ]; then
-    cmd_status=0;
- fi
- cmd_str="${cmd[@]}"
- oscsend localhost 9456 /silica/display/startup_system_process si "$cmd_str" $cmd_status
-
- sleep 2.0
-
- cmd=(/home/silica/Dev/peatlands/peatlands -m $monome1 -cy "echo 'hello' &")
+ cmd=(/home/silica/Dev/peatlands/peatlands -m $monome1 -cy "/home/silica/Dev/cyperus/cyperus -i 4 -o 4")
  cmd_status=1;
  nohup "${cmd[@]}" > /var/log/silica/peatlands.out 2> /var/log/silica/peatlands.err &
  if [ $? -eq 0 ]; then
